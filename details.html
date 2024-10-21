@@ -93,6 +93,12 @@
             const urlParams = new URLSearchParams(window.location.search);
             const tshirtId = urlParams.get('id');
 
+            // تحقق من وجود معرف المنتج
+            if (!tshirtId) {
+                document.getElementById('tshirtDetails').innerText = "معرف المنتج غير موجود.";
+                return;
+            }
+
             db.collection("tshirts").doc(tshirtId).get().then((doc) => {
                 if (doc.exists) {
                     const tshirtData = doc.data();
@@ -100,6 +106,9 @@
                 } else {
                     document.getElementById('tshirtDetails').innerText = "لم يتم العثور على المنتج.";
                 }
+            }).catch((error) => {
+                console.error("خطأ في جلب البيانات: ", error);
+                document.getElementById('tshirtDetails').innerText = "حدث خطأ أثناء جلب البيانات.";
             });
         }
 
