@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تفاصيل المنتج</title>
     <style>
-        /* استيراد الخط من جوجل */
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
         body {
@@ -21,27 +20,25 @@
             color: #ffa726;
         }
 
-        .tshirt-details {
+        .product-container {
+            margin-top: 20px;
+        }
+
+        .product-card {
             background-color: #121212;
             border-radius: 10px;
             padding: 20px;
+            width: 400px;
+            margin: auto;
+            text-align: center;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            margin: 0 auto;
-            max-width: 600px;
         }
 
-        .tshirt-details img {
+        .product-card img {
             width: 100%;
-            height: auto;
+            height: 300px;
+            object-fit: cover;
             border-radius: 10px;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            font-size: 18px;
-            margin: 10px 0;
-            color: #fff;
-            text-align: right;
         }
 
         .price {
@@ -50,30 +47,33 @@
             margin-top: 10px;
         }
 
-        .contact-btn {
+        .description {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        .back-btn {
             background-color: #A755F7;
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
             font-size: 18px;
-            margin-top: 10px;
+            margin-top: 20px;
             display: inline-block;
-            cursor: pointer;
         }
 
-        .contact-btn:hover {
+        .back-btn:hover {
             background-color: #9245c4;
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
     <h1>تفاصيل المنتج</h1>
-
-    <div class="tshirt-details" id="tshirtDetails">
-        <!-- تفاصيل التيشرت ستظهر هنا -->
-    </div>
+    <div class="product-container" id="productContainer"></div>
 
     <script>
         const firebaseConfig = {
@@ -88,66 +88,60 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // جلب تفاصيل التيشرت باستخدام معرف المنتج من الرابط
-        function getTshirtDetails() {
+        function getProductId() {
             const urlParams = new URLSearchParams(window.location.search);
-            const tshirtId = urlParams.get('id');
+            return urlParams.get('id');
+        }
 
-            // تحقق من وجود معرف المنتج
-            if (!tshirtId) {
-                document.getElementById('tshirtDetails').innerText = "معرف المنتج غير موجود.";
-                return;
-            }
-
-            db.collection("tshirts").doc(tshirtId).get().then((doc) => {
-                if (doc.exists) {
-                    const tshirtData = doc.data();
-                    displayTshirtDetails(tshirtData);
+        function loadProduct() {
+            const productId = getProductId();
+            db.collection("tshirts").doc(productId).get().then((doc) => {
+                if (!doc.exists) {
+                    document.getElementById('productContainer').innerText = "المنتج غير موجود.";
                 } else {
-                    document.getElementById('tshirtDetails').innerText = "لم يتم العثور على المنتج.";
+                    const productData = { id: doc.id, ...doc.data() };
+                    displayProduct(productData);
                 }
             }).catch((error) => {
-                console.error("خطأ في جلب البيانات: ", error);
-                document.getElementById('tshirtDetails').innerText = "حدث خطأ أثناء جلب البيانات.";
+                console.error("خطأ في تحميل البيانات: ", error);
             });
         }
 
-        function displayTshirtDetails(tshirt) {
-            const tshirtDetails = document.getElementById('tshirtDetails');
+        function displayProduct(product) {
+            const productContainer = document.getElementById('productContainer');
 
-            // عرض الصور
-            tshirt.imageUrls.forEach(url => {
-                const img = document.createElement('img');
-                img.src = url;
-                tshirtDetails.appendChild(img);
-            });
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
 
-            // عرض الوصف
-            const description = document.createElement('div');
-            description.className = 'description';
-            description.innerText = tshirt.description; // عرض الوصف
-            tshirtDetails.appendChild(description);
+            // عرض الصورة
+            const img = document.createElement('img');
+            img.src = product.imageUrls[0]; // استخدام الصورة الأولى
+            productCard.appendChild(img);
 
             // عرض السعر
             const price = document.createElement('div');
             price.className = 'price';
-            price.innerText = `${tshirt.price} جنية`;
-            tshirtDetails.appendChild(price);
+            price.innerText = `${product.price} جنية`;
+            productCard.appendChild(price);
 
-            // زر التواصل مع التاجر
-            const contactBtn = document.createElement('a');
-            contactBtn.className = 'contact-btn';
-            contactBtn.innerText = 'التواصل مع التاجر';
+            // عرض الوصف
+            const description = document.createElement('div');
+            description.className = 'description';
+            description.innerText = product.description || "لا يوجد وصف متاح."; // استخدام وصف المنتج إذا كان متاحًا
+            productCard.appendChild(description);
 
-            // هنا نضيف روابط الصور إلى نص الرسالة
-            const message = `مرحبًا، أود الاستفسار عن التيشرت "${tshirt.description}" بسعر ${tshirt.price} جنية.%0A`;
-            contactBtn.href = `https://wa.me/20011522966667?text=${message}`;
-            contactBtn.target = '_blank'; // فتح واتساب في نافذة جديدة
-            tshirtDetails.appendChild(contactBtn);
+            // زر العودة
+            const backBtn = document.createElement('a');
+            backBtn.className = 'back-btn';
+            backBtn.innerText = 'عودة إلى المنتجات';
+            backBtn.href = 'index.html'; // العودة إلى صفحة المنتجات
+            productCard.appendChild(backBtn);
+
+            productContainer.appendChild(productCard);
         }
 
         // تحميل البيانات عند فتح الصفحة
-        window.onload = getTshirtDetails;
+        window.onload = loadProduct;
     </script>
 
 </body>
