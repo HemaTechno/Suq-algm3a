@@ -87,22 +87,6 @@
             color: #ffa726;
         }
 
-        .sizes, .colors {
-            margin: 10px 0;
-        }
-
-        .sizes span, .colors span {
-            display: inline-block;
-            margin: 0 5px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            background-color: #2e2e2e;
-        }
-
-        .colors span {
-            background-color: #4CAF50;
-        }
-
         .price {
             font-size: 24px;
             color: #FFD700;
@@ -138,14 +122,14 @@
 
     <script>
         const firebaseConfig = {
-  apiKey: "AIzaSyBoPJbx5v6EkOqxOJkbhzHqIJdAByh79Rg",
-  authDomain: "hhhhhh-d4fb8.firebaseapp.com",
-  projectId: "hhhhhh-d4fb8",
-  storageBucket: "hhhhhh-d4fb8.appspot.com",
-  messagingSenderId: "24512338206",
-  appId: "1:24512338206:web:dfe045db59bd3434a2110f",
-  measurementId: "G-HD4R7GNQ5H"
-};
+            apiKey: "AIzaSyBoPJbx5v6EkOqxOJkbhzHqIJdAByh79Rg",
+            authDomain: "hhhhhh-d4fb8.firebaseapp.com",
+            projectId: "hhhhhh-d4fb8",
+            storageBucket: "hhhhhh-d4fb8.appspot.com",
+            messagingSenderId: "24512338206",
+            appId: "1:24512338206:web:dfe045db59bd3434a2110f",
+            measurementId: "G-HD4R7GNQ5H"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -197,18 +181,8 @@
             tshirtDetails.className = 'tshirt-details';
 
             const tshirtName = document.createElement('h2');
-            tshirtName.innerText = tshirt.name;
+            tshirtName.innerText = tshirt.description; // استخدام الوصف بدلاً من الاسم
             tshirtDetails.appendChild(tshirtName);
-
-            const sizes = document.createElement('div');
-            sizes.className = 'sizes';
-            sizes.innerHTML = `<strong>المقاسات المتوفرة:</strong> ${tshirt.sizes}`;
-            tshirtDetails.appendChild(sizes);
-
-            const colors = document.createElement('div');
-            colors.className = 'colors';
-            colors.innerHTML = `<strong>الألوان المتوفرة:</strong> ${tshirt.colors}`;
-            tshirtDetails.appendChild(colors);
 
             const price = document.createElement('div');
             price.className = 'price';
@@ -223,9 +197,7 @@
             contactBtn.innerText = 'التواصل مع التاجر';
 
             // هنا نضيف روابط الصور إلى نص الرسالة
-            const imageLinks = tshirt.imageUrls.join('%0A');
-            const message = `مرحبًا، أود الاستفسار عن التيشرت ${tshirt.name} بسعر ${tshirt.price} جنية.%0Aالمقاسات المتوفرة: ${tshirt.sizes}%0Aالألوان المتوفرة: ${tshirt.colors}%0A`;
-            
+            const message = `مرحبًا، أود الاستفسار عن التيشرت ${tshirt.description} بسعر ${tshirt.price} جنية.%0A`;
             contactBtn.href = `https://wa.me/20${tshirt.contact}?text=${message}`;
             contactBtn.target = '_blank'; // فتح واتساب في نافذة جديدة
             tshirtCard.appendChild(contactBtn);
