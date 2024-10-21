@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المنتج</title>
+    <style>
+        /* استيراد الخط من جوجل */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #080C15;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #ffa726;
+        }
+
+        .tshirt-details {
+            background-color: #121212;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        .tshirt-details img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #fff;
+            text-align: right;
+        }
+
+        .price {
+            font-size: 24px;
+            color: #FFD700;
+            margin-top: 10px;
+        }
+
+        .contact-btn {
+            background-color: #A755F7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 18px;
+            margin-top: 10px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .contact-btn:hover {
+            background-color: #9245c4;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>تفاصيل المنتج</h1>
+
+    <div class="tshirt-details" id="tshirtDetails">
+        <!-- تفاصيل التيشرت ستظهر هنا -->
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoPJbx5v6EkOqxOJkbhzHqIJdAByh79Rg",
+            authDomain: "hhhhhh-d4fb8.firebaseapp.com",
+            projectId: "hhhhhh-d4fb8",
+            storageBucket: "hhhhhh-d4fb8.appspot.com",
+            messagingSenderId: "24512338206",
+            appId: "1:24512338206:web:dfe045db59bd3434a2110f",
+            measurementId: "G-HD4R7GNQ5H"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // جلب تفاصيل التيشرت باستخدام معرف المنتج من الرابط
+        function getTshirtDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tshirtId = urlParams.get('id');
+
+            db.collection("tshirts").doc(tshirtId).get().then((doc) => {
+                if (doc.exists) {
+                    const tshirtData = doc.data();
+                    displayTshirtDetails(tshirtData);
+                } else {
+                    document.getElementById('tshirtDetails').innerText = "لم يتم العثور على المنتج.";
+                }
+            });
+        }
+
+        function displayTshirtDetails(tshirt) {
+            const tshirtDetails = document.getElementById('tshirtDetails');
+
+            // عرض الصور
+            tshirt.imageUrls.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                tshirtDetails.appendChild(img);
+            });
+
+            // عرض الوصف
+            const description = document.createElement('div');
+            description.className = 'description';
+            description.innerText = tshirt.description; // عرض الوصف
+            tshirtDetails.appendChild(description);
+
+            // عرض السعر
+            const price = document.createElement('div');
+            price.className = 'price';
+            price.innerText = `${tshirt.price} جنية`;
+            tshirtDetails.appendChild(price);
+
+            // زر التواصل مع التاجر
+            const contactBtn = document.createElement('a');
+            contactBtn.className = 'contact-btn';
+            contactBtn.innerText = 'التواصل مع التاجر';
+
+            // هنا نضيف روابط الصور إلى نص الرسالة
+            const message = `مرحبًا، أود الاستفسار عن التيشرت "${tshirt.description}" بسعر ${tshirt.price} جنية.%0A`;
+            contactBtn.href = `https://wa.me/20011522966667?text=${message}`;
+            contactBtn.target = '_blank'; // فتح واتساب في نافذة جديدة
+            tshirtDetails.appendChild(contactBtn);
+        }
+
+        // تحميل البيانات عند فتح الصفحة
+        window.onload = getTshirtDetails;
+    </script>
+
+</body>
+</html>
