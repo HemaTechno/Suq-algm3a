@@ -78,10 +78,6 @@
             right: 10px;
         }
 
-        .tshirt-details {
-            margin-top: 10px;
-        }
-
         .price {
             font-size: 24px;
             color: #FFD700;
@@ -131,10 +127,16 @@
         // تحميل التيشرتات من قاعدة البيانات
         function loadTshirts() {
             db.collection("tshirts").get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const tshirtData = doc.data();
-                    displayTshirt(tshirtData);
-                });
+                if (querySnapshot.empty) {
+                    document.getElementById('tshirtContainer').innerText = "لا توجد منتجات.";
+                } else {
+                    querySnapshot.forEach((doc) => {
+                        const tshirtData = { id: doc.id, ...doc.data() }; // إضافة معرف المنتج
+                        displayTshirt(tshirtData);
+                    });
+                }
+            }).catch((error) => {
+                console.error("خطأ في تحميل البيانات: ", error);
             });
         }
 
@@ -172,15 +174,10 @@
             tshirtCard.appendChild(imageSlider);
 
             // تفاصيل التيشرت
-            const tshirtDetails = document.createElement('div');
-            tshirtDetails.className = 'tshirt-details';
-
             const price = document.createElement('div');
             price.className = 'price';
             price.innerText = `${tshirt.price} جنية`;
-            tshirtDetails.appendChild(price);
-
-            tshirtCard.appendChild(tshirtDetails);
+            tshirtCard.appendChild(price);
 
             // زر عرض التفاصيل
             const detailsBtn = document.createElement('a');
