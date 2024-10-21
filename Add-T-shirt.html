@@ -77,9 +77,7 @@
 
     <h1>إضافة معلومات التيشرت</h1>
     <form id="tshirtForm">
-        <input type="text" id="name" placeholder="اسم التيشرت" required>
-        <input type="text" id="sizes" placeholder="المقاسات المتوفرة (مثال: S, M, L)" required>
-        <input type="text" id="colors" placeholder="الألوان المتوفرة (مثال: أحمر، أزرق، أسود)" required>
+        <textarea id="description" placeholder="وصف التيشرت" required></textarea> <!-- خانة الوصف -->
         <input type="number" id="price" placeholder="السعر (بالدولار)" required>
         <input type="tel" id="contact" placeholder="رقم التواصل مع التاجر" required>
         <input type="file" id="imageUpload" accept="image/*" multiple required> <!-- السماح بتحميل ملفات متعددة -->
@@ -88,14 +86,14 @@
 
     <script>
         const firebaseConfig = {
-  apiKey: "AIzaSyBoPJbx5v6EkOqxOJkbhzHqIJdAByh79Rg",
-  authDomain: "hhhhhh-d4fb8.firebaseapp.com",
-  projectId: "hhhhhh-d4fb8",
-  storageBucket: "hhhhhh-d4fb8.appspot.com",
-  messagingSenderId: "24512338206",
-  appId: "1:24512338206:web:dfe045db59bd3434a2110f",
-  measurementId: "G-HD4R7GNQ5H"
-};
+            apiKey: "AIzaSyBoPJbx5v6EkOqxOJkbhzHqIJdAByh79Rg",
+            authDomain: "hhhhhh-d4fb8.firebaseapp.com",
+            projectId: "hhhhhh-d4fb8",
+            storageBucket: "hhhhhh-d4fb8.appspot.com",
+            messagingSenderId: "24512338206",
+            appId: "1:24512338206:web:dfe045db59bd3434a2110f",
+            measurementId: "G-HD4R7GNQ5H"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -104,9 +102,7 @@
         document.getElementById('tshirtForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const name = document.getElementById('name').value;
-            const sizes = document.getElementById('sizes').value;
-            const colors = document.getElementById('colors').value;
+            const description = document.getElementById('description').value;
             const price = document.getElementById('price').value;
             const contact = document.getElementById('contact').value;
             const imageFiles = document.getElementById('imageUpload').files;
@@ -131,17 +127,15 @@
 
             // بعد رفع جميع الصور، حفظ البيانات في Firestore
             Promise.all(uploadPromises).then(() => {
-                saveTshirt(name, sizes, colors, price, contact, imageUrls);
+                saveTshirt(description, price, contact, imageUrls);
             }).catch(error => {
                 console.error("حدث خطأ أثناء رفع الصور:", error);
             });
         });
 
-        function saveTshirt(name, sizes, colors, price, contact, imageUrls) {
+        function saveTshirt(description, price, contact, imageUrls) {
             db.collection("tshirts").add({
-                name: name,
-                sizes: sizes,
-                colors: colors,
+                description: description,
                 price: price,
                 contact: contact,
                 imageUrls: imageUrls // حفظ روابط الصور المتعددة
