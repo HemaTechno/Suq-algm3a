@@ -110,6 +110,7 @@
         <label>اسم التيشرت: <input type="text" id="editName"></label><br><br>
         <label>المقاسات: <input type="text" id="editSizes"></label><br><br>
         <label>الألوان: <input type="text" id="editColors"></label><br><br>
+        <label>الوصف: <textarea id="editDescription"></textarea></label><br><br>
         <label>السعر: <input type="number" id="editPrice"></label><br><br>
         <button onclick="saveEdit()">حفظ</button>
         <button onclick="closeEditModal()">إلغاء</button>
@@ -117,14 +118,14 @@
 
     <script>
         const firebaseConfig = {
-  apiKey: "AIzaSyDoK427q44Fj87JhgZh2vKeUnACkjl8HDc",
-  authDomain: "treng-c6027.firebaseapp.com",
-  projectId: "treng-c6027",
-  storageBucket: "treng-c6027.appspot.com",
-  messagingSenderId: "305527546716",
-  appId: "1:305527546716:web:fd072a58200f31bb42d799",
-  measurementId: "G-3JFKFT2LT0"
-};
+            apiKey: "AIzaSyDoK427q44Fj87JhgZh2vKeUnACkjl8HDc",
+            authDomain: "treng-c6027.firebaseapp.com",
+            projectId: "treng-c6027",
+            storageBucket: "treng-c6027.appspot.com",
+            messagingSenderId: "305527546716",
+            appId: "1:305527546716:web:fd072a58200f31bb42d799",
+            measurementId: "G-3JFKFT2LT0"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -156,6 +157,10 @@
             const tshirtName = document.createElement('h2');
             tshirtName.innerText = tshirt.name;
             tshirtDetails.appendChild(tshirtName);
+
+            const description = document.createElement('p');
+            description.innerText = tshirt.description;
+            tshirtDetails.appendChild(description);
 
             const sizes = document.createElement('div');
             sizes.className = 'sizes';
@@ -211,6 +216,7 @@
             document.getElementById('editName').value = tshirt.name;
             document.getElementById('editSizes').value = tshirt.sizes;
             document.getElementById('editColors').value = tshirt.colors;
+            document.getElementById('editDescription').value = tshirt.description; // إضافة الوصف هنا
             document.getElementById('editPrice').value = tshirt.price;
             document.getElementById('editModal').style.display = 'block';
         }
@@ -225,12 +231,14 @@
             const newName = document.getElementById('editName').value;
             const newSizes = document.getElementById('editSizes').value;
             const newColors = document.getElementById('editColors').value;
+            const newDescription = document.getElementById('editDescription').value; // تحديث الوصف
             const newPrice = document.getElementById('editPrice').value;
 
             db.collection("tshirts").doc(currentEditId).update({
                 name: newName,
                 sizes: newSizes,
                 colors: newColors,
+                description: newDescription, // إضافة الوصف في التحديث
                 price: newPrice
             }).then(() => {
                 alert('تم تحديث التيشرت بنجاح');
