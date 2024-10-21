@@ -52,7 +52,7 @@
             font-size: 18px;
         }
 
-        .back-btn {
+        .contact-btn {
             background-color: #A755F7;
             color: white;
             padding: 10px 20px;
@@ -63,7 +63,7 @@
             display: inline-block;
         }
 
-        .back-btn:hover {
+        .contact-btn:hover {
             background-color: #9245c4;
         }
     </style>
@@ -130,12 +130,14 @@
             description.innerText = product.description || "لا يوجد وصف متاح."; // استخدام وصف المنتج إذا كان متاحًا
             productCard.appendChild(description);
 
-            // زر العودة
-            const backBtn = document.createElement('a');
-            backBtn.className = 'back-btn';
-            backBtn.innerText = 'عودة إلى المنتجات';
-            backBtn.href = 'index.html'; // العودة إلى صفحة المنتجات
-            productCard.appendChild(backBtn);
+            // صياغة الرسالة
+            const message = `مرحبا، أود الاستفسار عن المنتج: ${product.description} بسعر: ${product.price} جنية.`;
+            const whatsappNumber = "2001152296667"; // استبدل هذا برقم واتساب الخاص بالتاجر
+            const contactBtn = document.createElement('a');
+            contactBtn.className = 'contact-btn';
+            contactBtn.innerText = 'تواصل مع تاجر';
+            contactBtn.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            productCard.appendChild(contactBtn);
 
             productContainer.appendChild(productCard);
         }
